@@ -551,7 +551,7 @@ function parse_yaml_backup() {
           'incremental_backups' \
           'native_transport_port' \
           'rpc_address')
-  parse_yaml ${YAML_FILE}  
+  parse_yaml ${YAML_FILE}
 }
 
 #specific variables are needed for restore
@@ -763,7 +763,7 @@ function archive_compress() {
 }
 
 #For large backup files, this will split the file into multiple smaller files
-#which allows for more efficient upload / download from Google Cloud Storage 
+#which allows for more efficient upload / download from Google Cloud Storage
 function split_archive() {
   loginfo "Compressing And splitting backup"
   local cmd
@@ -1244,7 +1244,7 @@ do
 done
 
 ACTION=${ACTION:-backup} # either backup or restore
-AGE=5 #five minutes ago the last modified date of incremental backups to prune
+AGE=60 #sixty minutes ago the last modified date of incremental backups to prune
 AUTO_RESTART=true #flag set to false if Cassandra is part of a cluster
 BACKUP_DIR=${BACKUP_DIR:-/var/lib/cassandra/backups} # Backups base directory
 BZIP=${BZIP:-false} #use bzip2 compression
