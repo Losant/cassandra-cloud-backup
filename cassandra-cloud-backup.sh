@@ -446,7 +446,7 @@ function verbose_vars() {
   logverbose "COMPRESS_DIR: ${COMPRESS_DIR}"
   logverbose "COMPRESSION: ${COMPRESSION}"
   logverbose "CQLSH: ${CQLSH}"
-  logverbose "CQLSH_HOST: ${CQLSH_HOST}"
+  logverbose "CQLSH_DEFAULT_HOST: ${CQLSH_DEFAULT_HOST}"
   logverbose "DATE: ${DATE}"
   logverbose "DOWNLOAD_ONLY: ${DOWNLOAD_ONLY}"
   logverbose "DRY_RUN: ${DRY_RUN}"
@@ -549,7 +549,8 @@ function parse_yaml_backup() {
           'commitlog_directory' \
           'saved_caches_directory' \
           'incremental_backups' \
-          'native_transport_port')
+          'native_transport_port' \
+          'rpc_address')
   parse_yaml ${YAML_FILE}  
 }
 
@@ -663,8 +664,9 @@ function take_snapshot() {
 # Export the whole schema for safety
 function export_schema() {
   loginfo "Exporting Schema to ${SCHEMA_DIR}/${DATE}-schema.cql"
+  local cqlsh_host=${rpc_address:-$CQLSH_DEFAULT_HOST}
   local cmd
-  cmd="${CQLSH} ${CQLSH_HOST} ${native_transport_port} ${USER_OPTIONS} -e 'DESC SCHEMA;'"
+  cmd="${CQLSH} ${cqlsh_host} ${native_transport_port} ${USER_OPTIONS} -e 'DESC SCHEMA;'"
   if ${DRY_RUN}; then
     loginfo "DRY RUN:  ${cmd}  > ${SCHEMA_DIR}/${DATE}-schema.cql"
   else
@@ -1254,7 +1256,7 @@ CLEAR_SNAPSHOTS=${CLEAR_SNAPSHOTS:-false} #clear old snapshots pre-snapshot
 COMPRESS_DIR=${COMPRESS_DIR:-${BACKUP_DIR}/compressed} #directory to house backup archive
 COMPRESSION=${COMPRESSION:-false} #flag to use tar+gz
 CQLSH="$(which cqlsh)" #which cqlsh command
-CQLSH_HOST=${CQLSH_HOST:-12.0.0.1} #cqlsh host
+CQLSH_DEFAULT_HOST=${CQLSH_DEFAULT_HOST:-12.0.0.1} #default cqlsh host
 DATE="$(prepare_date +%F_%H-%M )" #nicely formatted date string for files
 DOWNLOAD_ONLY=${DOWNLOAD_ONLY:-false} #user flag or used if incremental restore is requested
 DRY_RUN=${DRY_RUN:-false} #flag to only print what would have executed
