@@ -1244,7 +1244,7 @@ done
 ACTION=${ACTION:-backup} # either backup or restore
 AGE=5 #five minutes ago the last modified date of incremental backups to prune
 AUTO_RESTART=true #flag set to false if Cassandra is part of a cluster
-BACKUP_DIR=${BACKUP_DIR:-/cassandra/backups} # Backups base directory
+BACKUP_DIR=${BACKUP_DIR:-/var/lib/cassandra/backups} # Backups base directory
 BZIP=${BZIP:-false} #use bzip2 compression
 CASSANDRA_PASS=${CASSANDRA_PASS:-''} #Password for Cassandra CQLSH account
 CASSANDRA_USER=${CASSANDRA_USER:-''} #Username for Cassandra CQLSH account
