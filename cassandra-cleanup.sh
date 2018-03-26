@@ -1,0 +1,1 @@
+nodetool repair && nodetool compact
