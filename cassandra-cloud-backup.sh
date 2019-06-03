@@ -544,7 +544,7 @@ function backup() {
   if ${CLEAR_INCREMENTALS}; then
     clear_incrementals
   fi
-  if ${AWS_BUCKET}; then
+  if [ ${AWS_BUCKET} ]; then
     if [ -z ${AWSCLI} ]; then
       logerror "Cannot find aws utility please make sure it is in the PATH"
       exit 1
