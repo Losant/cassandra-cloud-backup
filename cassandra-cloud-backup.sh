@@ -1173,7 +1173,7 @@ for arg in "$@"; do
   esac
 done
 
-while getopts 'a:b:BcCd:DfhH:iIjkl:LnN:p:rs:S:T:u:U:vwy:z' OPTION
+while getopts 'a:A:b:BcCd:DfhH:iIjkl:LnN:p:rs:S:T:u:U:vwy:z' OPTION
 do
   case $OPTION in
       a)
