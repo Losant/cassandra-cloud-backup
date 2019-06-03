@@ -52,7 +52,7 @@ Flags:
     to create or retrieve backups from different servers
 
   -A, --awsbucket
-  AWS bucket used in deployment and by the cluster.
+    AWS bucket used in deployment and by the cluster.
 
   -B, backup
     Default action is to take a backup
