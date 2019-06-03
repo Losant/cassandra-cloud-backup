@@ -539,8 +539,9 @@ function backup() {
     archive_compress
   fi
   copy_to_gcs
+  echo "############ 1 ${AWS_BACKUP_PATH} ################"
   if [ ${AWS_BUCKET} ]; then
-    echo "############ ${AWS_BACKUP_PATH} ################"
+    echo "############ 2 ${AWS_BACKUP_PATH} ################"
     if [ -z ${AWSCLI} ]; then
       logerror "Cannot find aws utility please make sure it is in the PATH"
       exit 1
