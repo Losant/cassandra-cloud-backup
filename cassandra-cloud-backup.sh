@@ -545,7 +545,7 @@ function backup() {
     clear_incrementals
   fi
   if [ ${AWS_BUCKET} ]; then
-    echo "############ ${AWS_BUCKET} ################"
+    echo "############ ${AWS_BACKUP_PATH} ################"
     if [ -z ${AWSCLI} ]; then
       logerror "Cannot find aws utility please make sure it is in the PATH"
       exit 1
@@ -840,18 +840,18 @@ function copy_to_gcs() {
 }
 
 function copy_to_aws() {
-  loginfo "Copying files to ${GCS_BACKUP_PATH}"
+  loginfo "Copying files to ${AWS_BACKUP_PATH}"
   if ${DRY_RUN}; then
     if ${SPLIT_FILE}; then
-      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}* ${GCS_BACKUP_PATH}"  # Does "*" work in aws
+      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}* ${AWS_BACKUP_PATH}"  # Does "*" work in aws
     else
-      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${ARCHIVE_FILE} ${GCS_BACKUP_PATH}"
+      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${ARCHIVE_FILE} ${AWS_BACKUP_PATH}"
     fi
   else
     if ${SPLIT_FILE}; then
-      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}*" "${GCS_BACKUP_PATH}"  # Does "*" work in aws
+      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}*" "${AWS_BACKUP_PATH}"  # Does "*" work in aws
     else
-      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${GCS_BACKUP_PATH}"
+      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${AWS_BACKUP_PATH}"
     fi
   fi
 }
