@@ -51,6 +51,9 @@ Flags:
     Specify an alternate server name to be used in the bucket path construction. Used
     to create or retrieve backups from different servers
 
+  -A, --awsbucket
+  AWS bucket used in deployment and by the cluster.
+
   -B, backup
     Default action is to take a backup
 
@@ -452,6 +455,7 @@ function verbose_vars() {
   logverbose "DRY_RUN: ${DRY_RUN}"
   logverbose "FORCE_RESTORE: ${FORCE_RESTORE}"
   logverbose "GCS_BUCKET: ${GCS_BUCKET}"
+  logverbose "AWS_BUCKET: ${AWS_BUCKET}"
   logverbose "GCS_TMPDIR: ${GCS_TMPDIR}"
   logverbose "GSUTIL: ${GSUTIL}"
   logverbose "HOSTNAME: ${HOSTNAME}"
@@ -539,6 +543,13 @@ function backup() {
   backup_cleanup
   if ${CLEAR_INCREMENTALS}; then
     clear_incrementals
+  fi
+  if ${AWS_BUCKET}; then
+    if [ -z ${AWSCLI} ]; then
+      logerror "Cannot find aws utility please make sure it is in the PATH"
+      exit 1
+    fi
+    copy_to_aws
   fi
 }
 
@@ -640,6 +651,11 @@ function set_auth_string() {
 function create_gcs_backup_path() {
   GCS_BACKUP_PATH="${GCS_BUCKET}/backups/${HOSTNAME}/${SUFFIX}/${DATE}/"
   loginfo "Will use target backup directory: ${GCS_BACKUP_PATH}"
+}
+
+function create_aws_backup_path() {
+  AWS_BACKUP_PATH="${AWS_BUCKET}/backups/${HOSTNAME}/${SUFFIX}/${DATE}/"
+  loginfo "Will use target backup directory: ${AWS_BACKUP_PATH}"
 }
 
 # In case there is an existing backup file list, clear it out
@@ -817,6 +833,23 @@ function copy_to_gcs() {
       ${GSUTIL} -m cp "${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}*" "${GCS_BACKUP_PATH}"
     else
       ${GSUTIL} cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${GCS_BACKUP_PATH}"
+    fi
+  fi
+}
+
+function copy_to_aws() {
+  loginfo "Copying files to ${GCS_BACKUP_PATH}"
+  if ${DRY_RUN}; then
+    if ${SPLIT_FILE}; then
+      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}* ${GCS_BACKUP_PATH}"  # Does "*" work in aws
+    else
+      loginfo "DRY RUN: ${AWSCLI} s3 cp ${COMPRESS_DIR}/${ARCHIVE_FILE} ${GCS_BACKUP_PATH}"
+    fi
+  else
+    if ${SPLIT_FILE}; then
+      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}*" "${GCS_BACKUP_PATH}"  # Does "*" work in aws
+    else
+      ${AWSCLI} s3 cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${GCS_BACKUP_PATH}"
     fi
   fi
 }
@@ -1112,6 +1145,7 @@ for arg in "$@"; do
     "--alt-hostname")   set -- "$@" "-a" ;;
     "--auth-file") set -- "$@" "-U" ;;
     "--gcsbucket") set -- "$@" "-b" ;;
+    "--awsbucket") set -- "$@" "-A" ;;
     "--backupdir")   set -- "$@" "-d" ;;
     "--bzip")    set -- "$@" "-j" ;;
     "--clear-old-ss")   set -- "$@" "-c" ;;
@@ -1142,6 +1176,9 @@ do
   case $OPTION in
       a)
           HOSTNAME=${OPTARG}
+          ;;
+      A)
+          AWS_BUCKET=${OPTARG%/}
           ;;
       b)
           GCS_BUCKET=${OPTARG%/}
@@ -1263,6 +1300,7 @@ DRY_RUN=${DRY_RUN:-false} #flag to only print what would have executed
 ERROR_COUNT=0 #used in validation step will exit if > 0
 FORCE_RESTORE=${FORCE_RESTORE:-false} #flag to bypass restore confirmation prompt
 GSUTIL="$(which gsutil)" #which gsutil script
+AWSCLI="$(which aws)" #which aws script
 HOSTNAME=${HOSTNAME:-"$(hostname)"} #used for gcs backup location
 INCLUDE_CACHES=${INCLUDE_CACHES:-false} #include the saved caches for posterity
 INCLUDE_COMMIT_LOGS=${INCLUDE_COMMIT_LOGS:-false} #include the commit logs for extra safety
