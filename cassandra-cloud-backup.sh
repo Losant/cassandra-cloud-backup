@@ -539,11 +539,6 @@ function backup() {
     archive_compress
   fi
   copy_to_gcs
-  save_last_inc_backup_time
-  backup_cleanup
-  if ${CLEAR_INCREMENTALS}; then
-    clear_incrementals
-  fi
   if [ ${AWS_BUCKET} ]; then
     echo "############ ${AWS_BACKUP_PATH} ################"
     if [ -z ${AWSCLI} ]; then
@@ -552,6 +547,11 @@ function backup() {
     fi
     create_aws_backup_path
     copy_to_aws
+  fi
+  save_last_inc_backup_time
+  backup_cleanup
+  if ${CLEAR_INCREMENTALS}; then
+    clear_incrementals
   fi
 }
 
