@@ -816,7 +816,7 @@ function copy_to_gcs() {
     if ${SPLIT_FILE}; then
       ${GSUTIL} -m cp "${COMPRESS_DIR}/${SPLIT_FILE_SUFFIX}*" "${GCS_BACKUP_PATH}"
     else
-      ${GSUTIL} cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${GCS_BACKUP_PATH}"
+      time ${GSUTIL} -m -o 'GSUtil:parallel_composite_upload_threshold=150M' -o 'GSUtil:parallel_process_count:8' cp "${COMPRESS_DIR}/${ARCHIVE_FILE}" "${GCS_BACKUP_PATH}"
     fi
   fi
 }
