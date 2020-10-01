@@ -146,7 +146,7 @@ Flags:
 
   -y, --yaml
     Path to the Cassandra yaml configuration file
-    default: /etc/cassandra/cassandra.yaml
+    default: /etc/cassandra/conf/cassandra.yaml
 
   -z, --zip
     Compresses the backup files with gzip prior to pushing to Google Cloud Storage
@@ -1294,7 +1294,7 @@ VERBOSE_RSYNC="" # add more detail to rsync when verbose mode is active
 ${VERBOSE} && VERBOSE_RSYNC="-v --progress"
 VERBOSE_RM="" # add more detail to remove when verbose mode is active
 ${VERBOSE} && VERBOSE_RM="-v"
-YAML_FILE=${YAML_FILE:-/etc/cassandra/cassandra.yaml} #Cassandra config file
+YAML_FILE=${YAML_FILE:-/etc/cassandra/conf/cassandra.yaml} #Cassandra config file
 ARCHIVE_FILE="cass-${DATE}-${SUFFIX}.${TAR_EXT}"
 SPLIT_FILE_SUFFIX="cass-${DATE}-${SUFFIX}"
 TARGET_LIST_FILE="${BACKUP_DIR}/${SUFFIX}_backup_files-${DATE}"
